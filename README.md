@@ -23,7 +23,9 @@ let
     // レコードを展開
     ExpandedTable = Table.ExpandRecordColumn(ItemTable, "Column1", {"item_date", "item_title", "item_link"}),
     // フィルタリング条件を設定
-    FilteredTable = Table.SelectRows(ExpandedTable, each Text.Contains([item_title], "Microsoft") or Text.Contains([item_title], "Adobe Acrobat") or Text.Contains([item_title], "Java"))
+    // FilteredTable = Table.SelectRows(ExpandedTable, each Text.Contains([item_title], "Microsoft") or Text.Contains([item_title], "Adobe Acrobat") or Text.Contains([item_title], "Java"))
+    Keywords = {"Microsoft", "Adobe Acrobat", "Java"},
+    FilteredTable = Table.SelectRows(ExpandedTable, each List.AnyTrue(List.Transform(Keywords, (k) => Text.Contains([item_title], k))))
 in
     FilteredTable
 ```
