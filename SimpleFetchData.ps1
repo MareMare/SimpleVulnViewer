@@ -3,6 +3,7 @@ $unixTime = [int][double]::Parse((Get-Date -UFormat %s))
 
 # URLを生成
 $url = "http://isec-myjvn-feed1.ipa.go.jp/IPARssReader.php?$unixTime&tool=icatw"
+$url
 
 # GETリクエストを送信
 try {
@@ -25,7 +26,7 @@ $filteredItems = $jsonResponse.itemdata | Where-Object {
     $_.item_title -match "Java"
 }
 
-# 必要なデータ (item_date, item_title, item_link) を抽出して整形
+# 必要なデータ (item_date, item_title, item_link) を抽出してテーブルとして整形
 $filteredItems | ForEach-Object {
     [PSCustomObject]@{
         Date  = $_.item_date
@@ -33,3 +34,14 @@ $filteredItems | ForEach-Object {
         Link  = $_.item_link
     }
 } | Format-Table -AutoSize
+
+# 必要なデータ (item_date, item_title, item_link) を抽出してJSONとして出力
+$filteredJson = $filteredItems | ForEach-Object {
+    [PSCustomObject]@{
+        Date  = $_.item_date
+        Title = $_.item_title
+        Link  = $_.item_link
+    }
+} | ConvertTo-Json -Depth 10
+
+$filteredJson
